@@ -178,8 +178,77 @@ BEGIN
     getEmpInfo(101, 106);
 END;
 
+--HR: Funcion que permite obtener el salario total de un empleado incluyendo
+--la comision (si no tiene comision, se mantiene el valor del salario).
+
+CREATE OR REPLACE FUNCTION getTotalSalary(id EMPLOYEES.EMPLOYEE_ID%TYPE)
+RETURN NUMBER
+AS 
+    totalSalary NUMBER;
+BEGIN
+    SELECT SALARY * (1 + NVL(COMMISSION_PCT, 0))
+    INTO totalSalary
+    FROM EMPLOYEES
+    WHERE EMPLOYEE_ID = id;
+    
+    RETURN totalSalary;
+END;
+
+--Pruebas de la funcion (en una consulta)
+SELECT EMPLOYEE_ID, SALARY, getTotalSalary(EMPLOYEE_ID) FROM EMPLOYEES;
 
 
+--Procedure que recibe un nombre de ciudad y muestra en consola la cantidad 
+--de estudiantes que viven en dicha ciudad
+CREATE OR REPLACE PROCEDURE showStudentCount(cityName ZIPCODE.CITY%TYPE)
+AS
+    studentCount NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO studentCount
+    FROM ZIPCODE Z
+    INNER JOIN STUDENT S
+    ON Z.ZIP = S.ZIP
+    WHERE Z.CITY = cityName;
+    
+    DBMS_OUTPUT.PUT_LINE('Cantidad de estudiantes en ' || cityName || ': ' || studentCount);
+END;
 
+--Llamado a procedure
+BEGIN
+    showStudentCount('LOS ANGELES');
+    showStudentCount('STANFORD');
+    showStudentCount('NEW YORK');
+END;
 
+--CURSORES
+--********
+
+--Muestre los codigos y apellidos de todos los empleados
+DECLARE
+    CURSOR curEmp IS
+    SELECT * FROM EMPLOYEES;
+BEGIN
+    FOR emp IN curEmp LOOP
+        DBMS_OUTPUT.PUT_LINE(emp.EMPLOYEE_ID || ' ' || emp.LAST_NAME);
+    END LOOP;
+END;
+
+--Implemente un procedure que reciba un codigo de departamento como entrada
+--y muestre en pantalla el apellido y salario de todos los empleados de ese
+--departamento
+CREATE OR REPLACE PROCEDURE showEmployees(departmentId DEPARTMENTS.DEPARTMENT_ID%TYPE)
+AS
+    CURSOR curEmp IS
+    SELECT * FROM EMPLOYEES WHERE DEPARTMENT_ID = departmentId;
+BEGIN
+    FOR emp IN curEmp LOOP
+        DBMS_OUTPUT.PUT_LINE('Apellido: ' || emp.LAST_NAME || '. Salario: ' || emp.SALARY);
+    END LOOP;    
+END;
+
+--Pruebas del Procedure (Bloque Anonimo)
+BEGIN
+    showEmployees(90);
+END;
 
