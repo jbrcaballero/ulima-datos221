@@ -27,15 +27,15 @@ public class PruebaInsert {
         pst.executeUpdate();
         pst.close();
         conn.close();
-    }    
+    }     
 
     public static void main(String[] args) throws Exception{
-        /*
+        
         Producto p1 = new Producto(800, "Teclado Inalambrico u88", 60.75f);
         Producto p2 = new Producto(900, "Mouse Inalambrico X89", 34.75f);
         registrarProducto(p1);
         registrarProducto(p2);
-        */
+        
         Producto p3 = new Producto(1200, "Laptop Kid XYZ V2", 999.11f);
         registrarProducto(p3);
         System.out.println("Productos registrados correctamente");
